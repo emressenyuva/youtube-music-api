@@ -1,5 +1,4 @@
 const axios = require('axios').default
-axios.defaults.adapter = require('axios/lib/adapters/http');
 const tough = require('tough-cookie')
 const querystring = require('querystring')
 const _ = require('lodash')
@@ -164,6 +163,23 @@ class YoutubeMusicApi {
                                 break
                         }
                         resolve(result)
+                    } catch (error) {
+                        return resolve({
+                            error: error.message
+                        })
+                    }
+                })
+                .catch(error => reject(error))
+        })
+    }
+
+    getSong(videoId) {
+        return new Promise((resolve, reject) => {
+            this._createApiRequest('player', utils.buildSongEndpointContext(videoId))
+                .then(context => {
+                    try {
+                        const result = parsers.parseSongPage(context)
+                        return resolve(result)
                     } catch (error) {
                         return resolve({
                             error: error.message
